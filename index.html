@@ -3,45 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL | ID VAULT</title>
-    <link rel="stylesheet" href="style.css"> <!-- Links the CSS -->
+    <title>SYSTEM_OVERRIDE | ID VAULT</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="matrix-bg"></div> <!-- For the animation -->
-    
-    <header>
-        <h1>SYSTEM_VAULT v2.0</h1>
-        <div id="clock">00:00:00</div>
-    </header>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="scanline"></div>
 
-    <div class="controls">
-        <input type="text" id="newName" placeholder="Item Name">
-        <input type="text" id="newId" placeholder="ID Number">
-        <select id="newCat">
-            <option value="Gear">Gear</option>
-            <option value="Music">Music</option>
-            <option value="Vehicle">Vehicle</option>
-        </select>
-        <button class="btn-add" onclick="addItem()">+ INJECT_DATA</button>
-        <br><br>
-        <div class="search-wrapper">
-            <input type="text" id="searchBar" placeholder="SEARCH_DATABASE..." onkeyup="search()">
-            <button onclick="clearSearch()">X</button>
+    <div class="container">
+        <header>
+            <h1 class="glitch-text">LPI_VAULT_OS</h1>
+            <div class="status-bar">
+                <span id="clock">00:00:00</span> | 
+                <span class="neon-text">CONNECTION: ENCRYPTED</span>
+            </div>
+        </header>
+
+        <section class="controls">
+            <div class="inject-form">
+                <input type="text" id="newName" placeholder="ITEM NAME">
+                <input type="text" id="newId" placeholder="ID NUMBER">
+                <select id="newCat">
+                    <option value="gears">GEARS</option>
+                    <option value="music">AUDIO</option>
+                    <option value="cords">CORDS</option>
+                    <option value="npcs">NPCs</option>
+                    <option value="misc">MISC</option>
+                </select>
+                <button class="btn-inject" onclick="addItem()">+ INJECT_DATA</button>
+            </div>
+            
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="QUERY DATABASE..." onkeyup="search()">
+            </div>
+            
+            <div class="category-grid">
+                <button class="cat-btn active" onclick="filterCat('all', this)">ALL_SYSTEMS</button>
+                <button class="cat-btn" onclick="filterCat('music', this)">AUDIO</button>
+                <button class="cat-btn" onclick="filterCat('gears', this)">GEARS</button>
+                <button class="cat-btn" onclick="filterCat('cords', this)">CORDS</button>
+                <button class="cat-btn" onclick="filterCat('npcs', this)">NPCs</button>
+            </div>
+        </section>
+
+        <div id="vault-grid" class="vault-grid">
+            <p class="loading-text">INITIALIZING DATABASE...</p>
         </div>
     </div>
 
-    <div class="categories" id="catFilters">
-        <!-- Counters will be added here by JS -->
-    </div>
-
-    <div class="container" id="vault"></div>
-
-    <div class="backup-tools">
-        <button onclick="exportData()">DOWNLOAD_BACKUP</button>
-        <input type="file" id="importFile" onchange="importData(event)" style="display:none">
-        <button onclick="document.getElementById('importFile').click()">RESTORE_BACKUP</button>
-    </div>
-
-    <script src="script.js"></script> <!-- Links the JS -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>

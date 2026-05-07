@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temsin's ID Vault</title>
+    <style>
+        /* CSS: The "Style" */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #0b0b0e;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 { color: #00e1ff; text-transform: uppercase; letter-spacing: 2px; }
+
+        #searchBar {
+            width: 90%;
+            max-width: 500px;
+            padding: 15px;
+            margin-bottom: 30px;
+            background: #16161d;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+        }
+
+        #searchBar:focus { border-color: #00e1ff; outline: none; }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #1c1c24;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #2d2d3a;
+            transition: 0.3s;
+        }
+
+        .card:hover { border-color: #00e1ff; transform: translateY(-5px); }
+
+        .item-name { display: block; font-weight: bold; margin-bottom: 10px; font-size: 1.1em; }
+        .item-id { display: block; color: #00ff88; font-family: monospace; margin-bottom: 15px; }
+
+        button {
+            background: #00e1ff;
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:active { background: #00b3cc; }
+
+        .status { font-size: 0.8em; color: #888; margin-top: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Gear & Sound Vault</h1>
+    <input type="text" id="searchBar" placeholder="Search for names or IDs..." onkeyup="search()">
+
+    <div class="container" id="vault">
+        <!-- IDs show up here -->
+    </div>
+
+    <script>
+        /* JAVASCRIPT: The "Brain" */
+        
+        // --- ADD YOUR NEW IDs HERE ---
+        const vaultData = [
+            { name: "Gravity Coil", id: "16688968" },
+            { name: "Speed Coil", id: "99119158" },
+            { name: "Subspace Tripmine", id: "11999247" },
+            { name: "Crescendo", id: "125424057" },
+            { name: "Epic Sax", id: "130766125" },
+            { name: "Scream Sound", id: "142383742" }
+        ];
+
+        function render(items) {
+            const vault = document.getElementById('vault');
+            vault.innerHTML = items.map(item => `
+                <div class="card">
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-id">${item.id}</span>
+                    <button onclick="copyIt('${item.id}', this)">COPY ID</button>
+                    <div class="status">Copied!</div>
+                </div>
+            `).join('');
+        }
+
+        function copyIt(id, btn) {
+            navigator.clipboard.writeText(id);
+            const status = btn.nextElementSibling;
+            status.style.display = 'block';
+            setTimeout(() => { status.style.display = 'none'; }, 1000);
+        }
+
+        function search() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = vaultData.filter(i => 
+                i.name.toLowerCase().includes(query) || i.id.includes(query)
+            );
+            render(filtered);
+        }
+
+        // Start the page
+        render(vaultData);
+    </script>
+
+</body>
+</html>

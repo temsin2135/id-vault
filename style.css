@@ -1,0 +1,133 @@
+:root {
+    --neon-blue: #00e1ff;
+    --neon-green: #0dff00;
+    --neon-red: #ff3131;
+    --dark-bg: #050505;
+    --card-bg: rgba(15, 15, 20, 0.9);
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: white;
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* --- Matrix Animation Effect --- */
+#matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)),
+                url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJpbmZ3eXJ4eXF4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/oBIuHn8F2xO5G/giphy.gif');
+    background-size: cover;
+    opacity: 0.15;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--neon-blue);
+    background: rgba(0, 0, 0, 0.8);
+}
+
+h1 {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+    margin: 0;
+}
+
+#clock {
+    color: var(--neon-green);
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+/* --- Controls & Inputs --- */
+.controls {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--neon-blue);
+    border-radius: 10px;
+    text-align: center;
+}
+
+input, select {
+    background: #000;
+    border: 1px solid var(--neon-blue);
+    color: white;
+    padding: 10px;
+    margin: 5px;
+}
+
+.btn-add {
+    background: var(--neon-blue);
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- Cards & Grid --- */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+    position: relative;
+}
+
+.card.working { border-left: 5px solid var(--neon-green); }
+.card.patched { border-left: 5px solid var(--neon-red); opacity: 0.7; }
+
+.card:hover {
+    box-shadow: 0 0 15px var(--neon-blue);
+    transform: scale(1.02);
+}
+
+.item-name {
+    display: block;
+    font-size: 1.2rem;
+    color: var(--neon-blue);
+    margin-bottom: 5px;
+}
+
+.item-id {
+    display: block;
+    background: #000;
+    padding: 5px;
+    color: var(--neon-green);
+    cursor: pointer;
+    text-align: center;
+    border: 1px dashed var(--neon-green);
+}
+
+.item-id:hover { background: #111; }
+
+.del-btn {
+    background: none;
+    border: none;
+    color: var(--neon-red);
+    cursor: pointer;
+    float: right;
+}
+
+.backup-tools {
+    text-align: center;
+    margin: 40px 0;
+}

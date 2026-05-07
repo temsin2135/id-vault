@@ -4,137 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERMINAL | ID VAULT</title>
-    <style>
-        :root {
-            --neon-blue: #00e1ff;
-            --neon-green: #00ff88;
-            --hacker-bg: #050507;
-            --card-bg: rgba(20, 20, 25, 0.8);
-        }
-
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: var(--hacker-bg);
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
-            background-image: linear-gradient(rgba(0, 225, 255, 0.05) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(0, 225, 255, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-
-        h1 { 
-            color: var(--neon-blue); 
-            text-transform: uppercase; 
-            letter-spacing: 5px;
-            text-shadow: 0 0 15px var(--neon-blue);
-        }
-
-        /* --- Hacker Search & Add Section --- */
-        .controls {
-            background: var(--card-bg);
-            padding: 20px;
-            border: 1px solid var(--neon-blue);
-            border-radius: 5px;
-            max-width: 600px;
-            margin: 0 auto 30px;
-            box-shadow: 0 0 20px rgba(0, 225, 255, 0.2);
-        }
-
-        input, select {
-            background: #000;
-            border: 1px solid #333;
-            color: var(--neon-green);
-            padding: 10px;
-            margin: 5px;
-            border-radius: 3px;
-        }
-
-        input:focus { border-color: var(--neon-green); outline: none; }
-
-        .btn-add {
-            background: var(--neon-green);
-            color: #000;
-            font-weight: bold;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* --- Categories --- */
-        .categories { margin-bottom: 20px; }
-        .filter-btn {
-            background: transparent;
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 5px 15px;
-            margin: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .filter-btn:hover, .filter-btn.active {
-            background: var(--neon-blue);
-            color: #000;
-        }
-
-        /* --- Vault Grid --- */
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border: 1px solid #222;
-            position: relative;
-            overflow: hidden;
-            border-left: 4px solid var(--neon-blue);
-        }
-
-        .card::before {
-            content: "SECURE_DATA";
-            position: absolute;
-            top: 2px;
-            right: 5px;
-            font-size: 8px;
-            color: #333;
-        }
-
-        .item-name { display: block; font-weight: bold; color: var(--neon-blue); margin-bottom: 5px; }
-        .item-cat { font-size: 0.7em; color: #888; text-transform: uppercase; margin-bottom: 10px; display: block;}
-        .item-id { display: block; color: var(--neon-green); font-size: 1.2em; margin-bottom: 15px; }
-
-        .copy-btn {
-            background: transparent;
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 8px;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        .copy-btn:hover { background: var(--neon-green); color: #000; }
-        
-        .delete-btn {
-            background: transparent;
-            border: none;
-            color: #ff4444;
-            font-size: 10px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css"> <!-- Links the CSS -->
 </head>
 <body>
-
-    <h1>ID_VAULT_OS.exe</h1>
+    <div id="matrix-bg"></div> <!-- For the animation -->
+    
+    <header>
+        <h1>SYSTEM_VAULT v2.0</h1>
+        <div id="clock">00:00:00</div>
+    </header>
 
     <div class="controls">
-        <h3>SYSTEM_INPUT</h3>
         <input type="text" id="newName" placeholder="Item Name">
         <input type="text" id="newId" placeholder="ID Number">
         <select id="newCat">
@@ -142,101 +22,26 @@
             <option value="Music">Music</option>
             <option value="Vehicle">Vehicle</option>
         </select>
-        <button class="btn-add" onclick="addItem()">+ ADD_DATA</button>
+        <button class="btn-add" onclick="addItem()">+ INJECT_DATA</button>
         <br><br>
-        <input type="text" id="searchBar" placeholder="SEARCH_DATABASE..." onkeyup="search()" style="width: 80%;">
+        <div class="search-wrapper">
+            <input type="text" id="searchBar" placeholder="SEARCH_DATABASE..." onkeyup="search()">
+            <button onclick="clearSearch()">X</button>
+        </div>
     </div>
 
-    <div class="categories">
-        <button class="filter-btn active" onclick="filterCat('All', this)">ALL</button>
-        <button class="filter-btn" onclick="filterCat('Gear', this)">GEARS</button>
-        <button class="filter-btn" onclick="filterCat('Music', this)">MUSIC</button>
-        <button class="filter-btn" onclick="filterCat('Vehicle', this)">VEHICLES</button>
+    <div class="categories" id="catFilters">
+        <!-- Counters will be added here by JS -->
     </div>
 
     <div class="container" id="vault"></div>
 
-    <script>
-        // Start with some default data if local storage is empty
-        let defaultData = [
-            { name: "Gravity Coil", id: "16688968", cat: "Gear" },
-            { name: "Epic Sax", id: "130766125", cat: "Music" }
-        ];
+    <div class="backup-tools">
+        <button onclick="exportData()">DOWNLOAD_BACKUP</button>
+        <input type="file" id="importFile" onchange="importData(event)" style="display:none">
+        <button onclick="document.getElementById('importFile').click()">RESTORE_BACKUP</button>
+    </div>
 
-        // Load data from LocalStorage or use defaults
-        let vaultData = JSON.parse(localStorage.getItem('myVault')) || defaultData;
-
-        function render(items) {
-            const vault = document.getElementById('vault');
-            vault.innerHTML = items.map((item, index) => `
-                <div class="card">
-                    <span class="item-cat">${item.cat}</span>
-                    <span class="item-name">${item.name}</span>
-                    <span class="item-id">${item.id}</span>
-                    <button class="copy-btn" onclick="copyIt('${item.id}', this)">ACCESS_ID</button>
-                    <button class="delete-btn" onclick="deleteItem(${index})">[PURGE]</button>
-                </div>
-            `).join('');
-        }
-
-        function addItem() {
-            const name = document.getElementById('newName').value;
-            const id = document.getElementById('newId').value;
-            const cat = document.getElementById('newCat').value;
-
-            if(name && id) {
-                vaultData.push({ name, id, cat });
-                saveAndRender();
-                document.getElementById('newName').value = '';
-                document.getElementById('newId').value = '';
-            }
-        }
-
-        function deleteItem(index) {
-            vaultData.splice(index, 1);
-            saveAndRender();
-        }
-
-        function saveAndRender() {
-            localStorage.setItem('myVault', JSON.stringify(vaultData));
-            render(vaultData);
-        }
-
-        function copyIt(id, btn) {
-            navigator.clipboard.writeText(id);
-            const oldText = btn.innerText;
-            btn.innerText = "COPIED!";
-            btn.style.borderColor = "#fff";
-            setTimeout(() => { 
-                btn.innerText = oldText; 
-                btn.style.borderColor = "var(--neon-green)";
-            }, 1000);
-        }
-
-        function search() {
-            const query = document.getElementById('searchBar').value.toLowerCase();
-            const filtered = vaultData.filter(i => 
-                i.name.toLowerCase().includes(query) || i.id.includes(query)
-            );
-            render(filtered);
-        }
-
-        function filterCat(cat, btn) {
-            // Update UI buttons
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if(cat === 'All') {
-                render(vaultData);
-            } else {
-                const filtered = vaultData.filter(i => i.cat === cat);
-                render(filtered);
-            }
-        }
-
-        // Initial Load
-        render(vaultData);
-    </script>
-
+    <script src="script.js"></script> <!-- Links the JS -->
 </body>
 </html>

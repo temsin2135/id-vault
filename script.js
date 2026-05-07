@@ -5,7 +5,8 @@ import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstati
 const firebaseConfig = {
   apiKey: "AIzaSyCWggo_F5VQyVymH95DlsRQAgcDobutGww",
   authDomain: "id-vault-17981.firebaseapp.com",
-  databaseURL: "https://id-vault-17981-default-rtdb.firebaseio.com/", 
+  // Change ONLY this line in your firebaseConfig:
+databaseURL: "https://id-vault-17981-default-rtdb.asia-southeast1.firebasedatabase.app/", 
   projectId: "id-vault-17981",
   storageBucket: "id-vault-17981.firebasestorage.app",
   messagingSenderId: "30816920890",

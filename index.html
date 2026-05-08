@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL_VAULT | SYSTEM OVERRIDE</title>
+    <title>Da Database 😎🕶️</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div id="purge-auth-overlay" style="display:none;">
         <div class="terminal-box">
-            <h2 style="color:#ff3131;">PURGE_AUTHORIZATION_REQUIRED</h2>
-            <p>ENTER NUCLEAR KEY TO COMMIT DELETION</p>
-            <input type="password" id="purgeCodeField" placeholder="****">
-            <div class="button-group">
-                <button class="btn-inject" id="confirmPurgeBtn">CONFIRM_PURGE</button>
-                <button class="btn-inject" style="background:#444;" onclick="cancelPurge()">CANCEL</button>
-            </div>
-            <p id="purge-error" style="color:#ff3131; display:none; margin-top:10px;"></p>
+            <h2 style="color:#ff3131;">PURGE_AUTHORIZATION</h2>
+            <input type="password" id="purgeCodeField" placeholder="NUCLEAR_KEY">
+            <button class="btn-inject" id="confirmPurgeBtn">CONFIRM</button>
+            <button class="btn-inject" style="background:#444;" onclick="cancelPurge()">CANCEL</button>
         </div>
     </div>
 
@@ -26,46 +22,45 @@
 
     <div class="container">
         <header>
-            <h1 class="glitch-text">LPI_VAULT_OS_V3</h1>
+            <h1 class="glitch-text">Da Database 😎🕶️</h1>
             <div class="status-bar">
-                <span id="clock">00:00:00</span> | 
-                <span class="neon-text">HIVE_MIND: ONLINE</span>
+                <span id="clock">00:00:00</span> | <span class="neon-text">HIVE_MIND: ACTIVE</span>
             </div>
         </header>
 
-        <section class="controls">
-            <div class="inject-form">
-                <input type="text" id="newName" placeholder="ITEM NAME">
-                <input type="text" id="newId" placeholder="ID NUMBER">
-                <input type="text" id="newDesc" placeholder="USAGE DESCRIPTION (e.g. Glitch bypass)">
-                <select id="newCat">
-                    <option value="gears">GEARS</option>
-                    <option value="music">AUDIO</option>
-                    <option value="cords">CORDS</option>
-                    <option value="scripts">SCRIPTS</option>
-                </select>
-                <button class="btn-inject" onclick="addItem()">+ INJECT_TO_CLOUD</button>
+        <section class="main-layout">
+            <div class="vault-section">
+                <div class="controls">
+                    <div class="inject-form">
+                        <input type="text" id="newName" placeholder="ITEM NAME">
+                        <input type="text" id="newId" placeholder="ROBLOX ID">
+                        <input type="text" id="newDesc" placeholder="USAGE GUIDE">
+                        <select id="newCat">
+                            <option value="gears">GEARS</option>
+                            <option value="music">AUDIO</option>
+                        </select>
+                        <button class="btn-inject" onclick="addItem()">+ INJECT</button>
+                    </div>
+                    <div class="category-grid">
+                        <button class="cat-btn active" onclick="filterCat('all', this)">ALL</button>
+                        <button class="cat-btn" onclick="filterCat('music', this)">AUDIO</button>
+                        <button class="cat-btn" onclick="filterCat('gears', this)">GEARS</button>
+                        <button class="btn-inject" style="background:#444;" onclick="exportJSON()">BACKUP_JSON</button>
+                    </div>
+                </div>
+                <div id="vault-grid" class="vault-grid"></div>
             </div>
-            
-            <div class="search-wrapper">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="SEARCH DATABASE..." onkeyup="search()">
-            </div>
-            
-            <div class="category-grid">
-                <button class="cat-btn active" onclick="filterCat('all', this)">ALL_SYSTEMS</button>
-                <button class="cat-btn" onclick="filterCat('music', this)">AUDIO</button>
-                <button class="cat-btn" onclick="filterCat('gears', this)">GEARS</button>
-                <button class="cat-btn" onclick="filterCat('cords', this)">CORDS</button>
-                <button class="cat-btn" onclick="filterCat('scripts', this)">SCRIPTS</button>
+
+            <div class="chat-section">
+                <h3>GLOBAL_COMMS [Clears Daily]</h3>
+                <div id="chat-box"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatMsg" placeholder="TYPE MESSAGE...">
+                    <button onclick="sendChat()">SEND</button>
+                </div>
             </div>
         </section>
-
-        <div id="vault-grid" class="vault-grid">
-            <p>CONNECTING_TO_DATABASE...</p>
-        </div>
     </div>
-
     <script type="module" src="script.js"></script>
 </body>
 </html>

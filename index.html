@@ -3,20 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM_OVERRIDE | ID VAULT</title>
+    <title>TERMINAL_VAULT | SYSTEM OVERRIDE</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div id="purge-auth-overlay" style="display:none;">
+        <div class="terminal-box">
+            <h2 style="color:#ff3131;">PURGE_AUTHORIZATION_REQUIRED</h2>
+            <p>ENTER NUCLEAR KEY TO COMMIT DELETION</p>
+            <input type="password" id="purgeCodeField" placeholder="****">
+            <div class="button-group">
+                <button class="btn-inject" id="confirmPurgeBtn">CONFIRM_PURGE</button>
+                <button class="btn-inject" style="background:#444;" onclick="cancelPurge()">CANCEL</button>
+            </div>
+            <p id="purge-error" style="color:#ff3131; display:none; margin-top:10px;"></p>
+        </div>
+    </div>
+
     <canvas id="matrix-canvas"></canvas>
     <div class="scanline"></div>
 
     <div class="container">
         <header>
-            <h1 class="glitch-text">LPI_VAULT_OS</h1>
+            <h1 class="glitch-text">LPI_VAULT_OS_V3</h1>
             <div class="status-bar">
                 <span id="clock">00:00:00</span> | 
-                <span class="neon-text">CONNECTION: ENCRYPTED</span>
+                <span class="neon-text">HIVE_MIND: ONLINE</span>
             </div>
         </header>
 
@@ -24,19 +37,19 @@
             <div class="inject-form">
                 <input type="text" id="newName" placeholder="ITEM NAME">
                 <input type="text" id="newId" placeholder="ID NUMBER">
+                <input type="text" id="newDesc" placeholder="USAGE DESCRIPTION (e.g. Glitch bypass)">
                 <select id="newCat">
                     <option value="gears">GEARS</option>
                     <option value="music">AUDIO</option>
                     <option value="cords">CORDS</option>
-                    <option value="npcs">NPCs</option>
-                    <option value="misc">MISC</option>
+                    <option value="scripts">SCRIPTS</option>
                 </select>
-                <button class="btn-inject" onclick="addItem()">+ INJECT_DATA</button>
+                <button class="btn-inject" onclick="addItem()">+ INJECT_TO_CLOUD</button>
             </div>
             
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="QUERY DATABASE..." onkeyup="search()">
+                <input type="text" id="searchInput" placeholder="SEARCH DATABASE..." onkeyup="search()">
             </div>
             
             <div class="category-grid">
@@ -44,12 +57,12 @@
                 <button class="cat-btn" onclick="filterCat('music', this)">AUDIO</button>
                 <button class="cat-btn" onclick="filterCat('gears', this)">GEARS</button>
                 <button class="cat-btn" onclick="filterCat('cords', this)">CORDS</button>
-                <button class="cat-btn" onclick="filterCat('npcs', this)">NPCs</button>
+                <button class="cat-btn" onclick="filterCat('scripts', this)">SCRIPTS</button>
             </div>
         </section>
 
         <div id="vault-grid" class="vault-grid">
-            <p class="loading-text">INITIALIZING DATABASE...</p>
+            <p>CONNECTING_TO_DATABASE...</p>
         </div>
     </div>
 

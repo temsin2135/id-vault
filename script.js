@@ -138,69 +138,83 @@ function render(items) {
 
         grid.innerHTML = '';
 
-        empty.style.display = 'block';
+        if (empty)
+            empty.style.display = 'block';
 
         return;
     }
 
-    empty.style.display = 'none';
+    if (empty)
+        empty.style.display = 'none';
 
     grid.innerHTML = items.map(item => `
 
-        <div class="card"
-            onclick="openModal('${item.fbKey}')">
+        <div class="card">
 
-            <img
-                class="asset-preview"
-                loading="lazy"
+            <div class="card-top">
 
-                src="https://assetgame.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=${item.id}"
+                <div class="gear-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
 
-                onerror="
-                    this.src='https://via.placeholder.com/420x420?text=NO+IMAGE'
-                "
-            >
+                <div
+                    class="status-tag ${item.status || 'working'}"
+                    onclick="
+                        toggleStatus(
+                            '${item.fbKey}',
+                            '${item.status}'
+                        )
+                    "
+                >
+                    ${(item.status || 'working').toUpperCase()}
+                </div>
 
-            <div
-                onclick="
-                    event.stopPropagation();
-                    toggleStatus(
-                        '${item.fbKey}',
-                        '${item.status}'
-                    )
-                "
-
-                class="status-tag ${item.status || 'working'}"
-            >
-                ${(item.status || 'working').toUpperCase()}
             </div>
 
             <div class="card-title">
                 ${item.name}
             </div>
 
-            <div
-                class="item-id"
-
-                onclick="
-                    event.stopPropagation();
-                    copyId('${item.id}')
-                "
-            >
+            <div class="item-id">
                 ${item.id}
             </div>
 
             <div class="item-desc">
-                ${item.desc || ''}
+                ${item.desc || 'No description'}
+            </div>
+
+            <div class="card-category">
+                ${item.cat || 'unknown'}
             </div>
 
             <div class="card-actions">
 
                 <button
+                    class="action-btn"
+
+                    onclick="
+                        copyId('${item.id}')
+                    "
+                >
+                    <i class="fas fa-copy"></i>
+                    COPY
+                </button>
+
+                <button
+                    class="action-btn"
+
+                    onclick="
+                        openAsset('${item.id}')
+                    "
+                >
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                    OPEN
+                </button>
+
+                <button
                     class="fav-btn"
 
                     onclick="
-                        event.stopPropagation();
                         toggleFavorite('${item.id}')
                     "
                 >
@@ -210,126 +224,13 @@ function render(items) {
                             : 'far'}
                         fa-star
                     "></i>
-                </button>
-
-                <button
-                    class="purge-btn"
-
-                    onclick="
-                        event.stopPropagation();
-                        requestPurge('${item.fbKey}')
-                    "
-                >
-                    PURGE
-                </button>
-
+                </button>                
             </div>
 
         </div>
 
     `).join('');
 }
-
-/* FILTER */
-
-function renderFiltered() {
-
-    let filtered = [...allData];
-
-    if (currentFilter !== 'all') {
-
-        filtered = filtered.filter(
-            i => i.cat === currentFilter
-        );
-    }
-
-    const q =
-        document.getElementById('searchInput')
-        ?.value
-        ?.toLowerCase() || '';
-
-    if (q) {
-
-        filtered = filtered.filter(i =>
-            i.name.toLowerCase().includes(q)
-            ||
-            i.id.includes(q)
-            ||
-            (i.desc || '')
-                .toLowerCase()
-                .includes(q)
-        );
-    }
-
-    const sort =
-        document.getElementById('sortSelect')
-        ?.value;
-
-    if (sort === 'alpha') {
-
-        filtered.sort((a, b) =>
-            a.name.localeCompare(b.name)
-        );
-
-    } else {
-
-        filtered.sort((a, b) =>
-            (b.time || 0)
-            -
-            (a.time || 0)
-        );
-    }
-
-    render(filtered);
-}
-
-/* SEARCH */
-
-window.handleSearch = () => {
-
-    const q =
-        document.getElementById('searchInput')
-        .value
-        .toLowerCase();
-
-    const box =
-        document.getElementById('search-suggestions');
-
-    if (!q) {
-
-        box.innerHTML = '';
-
-        return renderFiltered();
-    }
-
-    const suggestions = allData
-        .filter(i =>
-            i.name.toLowerCase().includes(q)
-        )
-        .slice(0, 5);
-
-    box.innerHTML = suggestions.map(s => `
-        <div
-            class="suggestion-item"
-            onclick="quickSearch('${s.name}')"
-        >
-            ${s.name}
-        </div>
-    `).join('');
-
-    renderFiltered();
-};
-
-window.quickSearch = (name) => {
-
-    document.getElementById('searchInput')
-        .value = name;
-
-    document.getElementById('search-suggestions')
-        .innerHTML = '';
-
-    renderFiltered();
-};
 
 /* FILTER BUTTONS */
 
@@ -417,24 +318,101 @@ function renderFavorites() {
 
     grid.innerHTML = favItems.map(item => `
         <div class="card">
-
-            <img
-                class="asset-preview"
-
-                src="https://assetgame.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=${item.id}"
-            >
-
+            <div class="card-top">
+                <div class="gear-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div
+                    class="status-tag ${item.status || 'working'}"
+                    onclick="
+                        toggleStatus(
+                            '${item.fbKey}',
+                            '${item.status}'
+                        )
+                    "
+                >
+                    ${(item.status || 'working').toUpperCase()}
+                </div>
+            </div>
             <div class="card-title">
                 ${item.name}
             </div>
-
             <div class="item-id">
                 ${item.id}
             </div>
-
+            <div class="item-desc">
+                ${item.desc || 'No description'}
+            </div>
+            <div class="card-category">
+                ${item.cat || 'unknown'}
+            </div>
+            <div class="card-actions">
+                <button
+                    class="action-btn"
+                    onclick="copyId('${item.id}')"
+                >
+                    <i class="fas fa-copy"></i>
+                    COPY
+                </button>
+                <button
+                    class="action-btn"
+                    onclick="openAsset('${item.id}')"
+                >
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                    OPEN
+                </button>
+                <button
+                    class="fav-btn"
+                    onclick="toggleFavorite('${item.id}')"
+                >
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
         </div>
     `).join('');
 }
+
+/* SEARCH & FILTER */
+
+window.handleSearch = () => {
+    renderFiltered();
+};
+
+window.renderFiltered = () => {
+    const searchTerm =
+        document.getElementById('searchInput')
+            .value
+            .toLowerCase();
+
+    const sortValue =
+        document.getElementById('sortSelect')
+            .value;
+
+    let filtered = allData.filter(item => {
+        const matchesSearch =
+            item.name.toLowerCase().includes(searchTerm) ||
+            item.id.toString().includes(searchTerm) ||
+            (item.desc && item.desc.toLowerCase().includes(searchTerm));
+
+        const matchesCategory =
+            currentFilter === 'all' ||
+            item.cat === currentFilter;
+
+        return matchesSearch && matchesCategory;
+    });
+
+    if (sortValue === 'alpha') {
+        filtered.sort((a, b) =>
+            a.name.localeCompare(b.name)
+        );
+    } else {
+        filtered.sort((a, b) =>
+            b.time - a.time
+        );
+    }
+
+    render(filtered);
+};
 
 /* NAVIGATION */
 
@@ -789,6 +767,63 @@ setInterval(() => {
 }, 1000);
 
 /* INIT */
+window.openAsset = (id) => {
 
+    window.open(
+        `https://www.roblox.com/catalog/${id}`,
+        '_blank'
+    );
+};
 updateFavoriteCounter();
 renderFavorites();
+/* RADIO SYSTEM */
+
+const radio =
+    document.getElementById('radio-player');
+
+const radioToggle =
+    document.getElementById('radio-toggle');
+
+/* ROBLOX AUDIO ID */
+
+const defaultRadioId = '1843520822';
+
+/* LOAD AUDIO */
+
+radio.src =
+    `https://api.allorigins.win/raw?url=https://assetdelivery.roblox.com/v1/asset/?id=${defaultRadioId}`;
+
+radio.volume = 0.2;
+
+let radioPlaying = false;
+
+/* CLICK TO PLAY */
+
+radioToggle.addEventListener('click', async () => {
+
+    try{
+
+        if(!radioPlaying){
+
+            await radio.play();
+
+            radioPlaying = true;
+
+            radioToggle.classList.add('playing');
+
+        }else{
+
+            radio.pause();
+
+            radioPlaying = false;
+
+            radioToggle.classList.remove('playing');
+        }
+
+    }catch(err){
+
+        console.log(err);
+
+        alert('Radio failed to load.');
+    }
+});

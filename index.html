@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,6 +131,83 @@
 
         </div>
 
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Da Database 😎🕶️</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="dark-mode">
+
+    <!-- MATRIX -->
+    <canvas id="matrix-canvas"></canvas>
+    <div class="scanline"></div>
+
+    <!-- PURGE AUTH -->
+    <div id="purge-auth-overlay" style="display:none;">
+        <div class="terminal-box">
+            <h2 style="color:#ff3131;">PURGE_AUTHORIZATION</h2>
+
+            <input
+                type="password"
+                id="purgeCodeField"
+                placeholder="NUCLEAR_KEY"
+            >
+
+            <button class="btn-inject" id="confirmPurgeBtn">
+                CONFIRM
+            </button>
+
+            <button
+                class="btn-inject"
+                style="background:#444;"
+                onclick="cancelPurge()"
+            >
+                CANCEL
+            </button>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="top-nav">
+
+        <div class="nav-left">
+            <h1 class="logo glitch-text">
+                Da Database 😎🕶️
+            </h1>
+        </div>
+
+        <div class="nav-center">
+
+            <button class="nav-btn active-nav"
+                onclick="showSection('vault')">
+                <i class="fas fa-database"></i>
+                VAULT
+            </button>
+
+            <button class="nav-btn"
+                onclick="showSection('favorites')">
+                <i class="fas fa-star"></i>
+                FAVORITES
+            </button>
+
+            <button class="nav-btn"
+                onclick="randomGear()">
+                <i class="fas fa-random"></i>
+                RANDOM
+            </button>
+
+        </div>
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
         <div class="nav-right">
 
             <button
@@ -164,6 +242,7 @@
             <div class="favorite-counter">
                 ⭐ <span id="favorite-count">0</span>
             </div>
+<<<<<<< HEAD
 
             <div class="status-bar">
                 <span id="clock">00:00:00</span>
@@ -214,6 +293,58 @@
                                 RECENT
                             </option>
 
+=======
+
+            <div class="status-bar">
+                <span id="clock">00:00:00</span>
+                |
+                <span class="neon-text">
+                    HIVE_MIND: ACTIVE
+                </span>
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- MAIN -->
+    <div class="container">
+
+        <section class="main-layout">
+
+            <!-- LEFT -->
+            <div class="vault-section">
+
+                <!-- SEARCH -->
+                <div class="search-controls">
+
+                    <div class="search-box">
+
+                        <i class="fas fa-search"></i>
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="SEARCH DATABASE... (CTRL+K)"
+                            onkeyup="handleSearch()"
+                        >
+
+                        <div id="search-suggestions"
+                            class="suggestions">
+                        </div>
+
+                    </div>
+
+                    <div class="sort-controls">
+
+                        <select id="sortSelect"
+                            onchange="sortItems()">
+
+                            <option value="recent">
+                                RECENT
+                            </option>
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
                             <option value="alpha">
                                 ALPHABETICAL
                             </option>
@@ -227,6 +358,7 @@
                             </option>
 
                         </select>
+<<<<<<< HEAD
 
                     </div>
 
@@ -245,6 +377,26 @@
                         <small>GEARS</small>
                     </div>
 
+=======
+
+                    </div>
+
+                </div>
+
+                <!-- STATS -->
+                <div class="stats-bar">
+
+                    <div class="stat-card">
+                        <span id="total-items">0</span>
+                        <small>TOTAL ITEMS</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span id="gear-count">0</span>
+                        <small>GEARS</small>
+                    </div>
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
                     <div class="stat-card">
                         <span id="audio-count">0</span>
                         <small>AUDIO</small>
@@ -259,6 +411,7 @@
                         <span id="report-count">0</span>
                         <small>REPORTS</small>
                     </div>
+<<<<<<< HEAD
 
                 </div>
 
@@ -285,6 +438,34 @@
                             placeholder="USAGE GUIDE"
                         >
 
+=======
+
+                </div>
+
+                <!-- INJECT -->
+                <div class="controls">
+
+                    <div class="inject-form admin-only">
+
+                        <input
+                            type="text"
+                            id="newName"
+                            placeholder="ITEM NAME"
+                        >
+
+                        <input
+                            type="text"
+                            id="newId"
+                            placeholder="ROBLOX ID"
+                        >
+
+                        <input
+                            type="text"
+                            id="newDesc"
+                            placeholder="USAGE GUIDE"
+                        >
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
                         <select id="newCat">
                             <option value="gears">GEARS</option>
                             <option value="music">AUDIO</option>
@@ -294,6 +475,7 @@
                             <option value="models">MODELS</option>
                             <option value="decals">DECALS</option>
                         </select>
+<<<<<<< HEAD
 
                         <button
                             class="btn-inject"
@@ -321,6 +503,35 @@
                             AUDIO
                         </button>
 
+=======
+
+                        <button
+                            class="btn-inject"
+                            onclick="addItem()"
+                        >
+                            + INJECT
+                        </button>
+
+                    </div>
+
+                    <!-- CATEGORY -->
+                    <div class="category-grid">
+
+                        <button
+                            class="cat-btn active"
+                            onclick="filterCat('all', this)"
+                        >
+                            ALL
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('music', this)"
+                        >
+                            AUDIO
+                        </button>
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
                         <button
                             class="cat-btn"
                             onclick="filterCat('gears', this)"
@@ -384,6 +595,7 @@
                             >
                         </label>
 
+<<<<<<< HEAD
                         <button
                             class="btn-inject admin-only"
                             style="background:#263238;"
@@ -479,6 +691,94 @@
                         GLOBAL_COMMS
                     </h3>
 
+=======
+                    </div>
+
+                </div>
+
+                <!-- VAULT -->
+                <div id="vault-view">
+
+                    <div
+                        id="vault-grid"
+                        class="vault-grid"
+                    >
+                    </div>
+
+                    <!-- EMPTY -->
+                    <div
+                        id="empty-state"
+                        class="empty-state"
+                        style="display:none;"
+                    >
+
+                        <i class="fas fa-box-open"></i>
+
+                        <h2>No Results Found</h2>
+
+                        <p>
+                            Try another search query.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- FAVORITES -->
+                <div
+                    id="favorites-view"
+                    style="display:none;"
+                >
+
+                    <div class="favorites-header">
+
+                        <h2>
+                            ⭐ FAVORITES
+                        </h2>
+
+                        <p>
+                            Saved items stored locally
+                        </p>
+
+                    </div>
+
+                    <div
+                        id="favorites-grid"
+                        class="vault-grid"
+                    >
+                    </div>
+
+                    <div
+                        id="empty-favorites"
+                        class="empty-state"
+                    >
+
+                        <i class="fas fa-star"></i>
+
+                        <h2>
+                            No Favorites Yet
+                        </h2>
+
+                        <p>
+                            Click the ⭐ button to save items.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CHAT -->
+            <div class="chat-section">
+
+                <div class="chat-header">
+
+                    <h3>
+                        GLOBAL_COMMS
+                    </h3>
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
                     <span class="chat-status">
                         CLEARS DAILY
                     </span>
@@ -491,9 +791,15 @@
                     </button>
 
                 </div>
+<<<<<<< HEAD
 
                 <div id="chat-box"></div>
 
+=======
+
+                <div id="chat-box"></div>
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
                 <div class="chat-input-area">
 
                     <input
@@ -506,6 +812,7 @@
                     <input
                         type="text"
                         id="chatMsg"
+<<<<<<< HEAD
                         placeholder="TYPE MESSAGE..."
                     >
 
@@ -575,6 +882,77 @@
 
     </div>
 
+=======
+                        placeholder="TYPE MESSAGE..."
+                    >
+
+                    <button onclick="sendChat()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- MODAL -->
+    <div id="gear-modal"
+        class="gear-modal hidden">
+
+        <div class="gear-modal-content">
+
+            <button
+                class="close-modal"
+                onclick="closeModal()"
+            >
+                ×
+            </button>
+
+            <img
+                id="modal-image"
+                class="modal-image"
+            >
+
+            <div class="modal-info">
+
+                <h2 id="modal-title"></h2>
+
+                <div id="modal-id"></div>
+
+                <div id="modal-category"></div>
+
+                <div id="modal-status"></div>
+
+                <p id="modal-desc"></p>
+
+                <div class="modal-buttons">
+
+                    <button
+                        class="copy-btn"
+                        onclick="modalCopy()"
+                    >
+                        COPY ID
+                    </button>
+
+                    <button
+                        id="modal-fav-btn"
+                        class="favorite-btn"
+                    >
+                        ⭐ FAVORITE
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     <!-- TOAST -->
     <div id="toast" class="toast">
         ID COPIED
@@ -605,13 +983,18 @@
         <iframe
             id="brainrotFrame"
             title="Brainrot video"
+<<<<<<< HEAD
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerpolicy="strict-origin-when-cross-origin"
+=======
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
             allowfullscreen
         ></iframe>
     </div>
 
     <!-- FOOTER -->
+<<<<<<< HEAD
     <footer>
 
         <p>
@@ -625,4 +1008,19 @@
     <script src="features.js"></script>
 
 </body>
+=======
+    <footer>
+
+        <p>
+            Da Database 😎🕶️
+            |
+            HIVE_SYSTEM ONLINE
+        </p>
+
+    </footer>
+    <script type="module" src="script.js"></script>
+    <script src="features.js"></script>
+
+</body>
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 </html>

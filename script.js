@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
 import {
@@ -26,6 +27,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+=======
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    push,
+    set,
+    onValue,
+    remove,
+    query,
+    limitToLast
+}
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+/* FIREBASE */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCWggo_F5VQyVymH95DlsRQAgcDobutGww",
+    authDomain: "id-vault-17981.firebaseapp.com",
+    databaseURL: "https://id-vault-17981-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "id-vault-17981",
+    storageBucket: "id-vault-17981.firebasestorage.app",
+    appId: "1:30816920890:web:55c2d3c620d05eb9f85c03"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 const vaultRef = ref(db, 'gears');
 const chatRef = ref(db, 'chat');
 
@@ -56,6 +87,7 @@ const adminCode = '2135';
 let decorTheme =
     localStorage.getItem('decorTheme') || 'matrix';
 
+<<<<<<< HEAD
 const BRAINROT_VIDEOS = [
     { id: 'sEtJb6CMWjw', label: 'Subway Surfers 12h' },
     { id: 'eRXE8Aebp7s', label: 'Subway Surfers 10h loop' },
@@ -124,10 +156,24 @@ function persistBrainrotVideoId(videoId) {
 
 let brainrotVideoId = resolveBrainrotVideoId();
 persistBrainrotVideoId(brainrotVideoId);
+=======
+let brainrotVideo =
+    localStorage.getItem('brainrotVideo') ||
+    'https://www.youtube.com/embed?listType=search&list=Subway%20Surfers%20gameplay&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1';
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 
 let brainrotEnabled =
     localStorage.getItem('brainrotEnabled') === 'true';
 
+<<<<<<< HEAD
+=======
+const brainrotPlaylist = [
+    'https://www.youtube.com/embed?listType=search&list=Subway%20Surfers%20gameplay&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1',
+    'https://www.youtube.com/embed?listType=search&list=oddly%20satisfying%20loop&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1',
+    'https://www.youtube.com/embed?listType=search&list=brain%20rot%20edit&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1'
+];
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 const categoryLabels = {
     gears: 'GEARS',
     music: 'AUDIO',
@@ -242,7 +288,11 @@ function syncBrainrotPanel() {
     panel.classList.toggle('hidden', !brainrotEnabled);
 
     if (brainrotEnabled) {
+<<<<<<< HEAD
         frame.src = buildBrainrotEmbedUrl(brainrotVideoId);
+=======
+        frame.src = brainrotVideo;
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     } else {
         frame.src = '';
     }
@@ -265,6 +315,7 @@ window.toggleBrainrotMode = () => {
 };
 
 window.changeBrainrotVideo = () => {
+<<<<<<< HEAD
     const currentIndex = BRAINROT_VIDEOS.findIndex(
         (video) => video.id === brainrotVideoId
     );
@@ -296,6 +347,34 @@ window.sendChat = () => {
         return alert("Slow down.");
     }
 
+=======
+    const next =
+        brainrotPlaylist[
+            Math.floor(Math.random() * brainrotPlaylist.length)
+        ];
+
+    brainrotVideo = next;
+    localStorage.setItem('brainrotVideo', next);
+
+    const frame = document.getElementById('brainrotFrame');
+    if (frame && brainrotEnabled) {
+        frame.src = next;
+    }
+
+    addTerminalLog('Brainrot panel cycled to a new feed');
+};
+
+/* CHAT */
+
+window.sendChat = () => {
+
+    const now = Date.now();
+
+    if (now - lastMessageTime < 1500) {
+        return alert("Slow down.");
+    }
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     const msg =
         document.getElementById('chatMsg')
         .value
@@ -310,9 +389,15 @@ window.sendChat = () => {
 
     if (!msg) return;
 
+<<<<<<< HEAD
     if (msg.length > 120) {
         return alert("Message too long.");
     }
+=======
+    if (msg.length > 120) {
+        return alert("Message too long.");
+    }
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 
     push(chatRef, {
         name: cleanText(name),
@@ -327,6 +412,7 @@ window.sendChat = () => {
     document.getElementById('chatMsg').value = '';
     addTerminalLog(`Chat sent by ${name}`);
 };
+<<<<<<< HEAD
 
 onValue(query(chatRef, limitToLast(50)), (snap) => {
 
@@ -343,6 +429,24 @@ onValue(query(chatRef, limitToLast(50)), (snap) => {
             .filter(m =>
                 new Date(m.time)
                 .toDateString() === today
+=======
+
+onValue(query(chatRef, limitToLast(50)), (snap) => {
+
+    const box =
+        document.getElementById('chat-box');
+
+    const data = snap.val();
+
+    const today =
+        new Date().toDateString();
+
+    box.innerHTML = data
+        ? Object.values(data)
+            .filter(m =>
+                new Date(m.time)
+                .toDateString() === today
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
             )
             .map(m => `
                 <div class="chat-msg">
@@ -357,6 +461,7 @@ onValue(query(chatRef, limitToLast(50)), (snap) => {
                 </div>
             `).join('')
         : '';
+<<<<<<< HEAD
 
     box.scrollTop = box.scrollHeight;
 });
@@ -367,6 +472,18 @@ onValue(vaultRef, (snap) => {
 
     const data = snap.val();
 
+=======
+
+    box.scrollTop = box.scrollHeight;
+});
+
+/* LOAD ITEMS */
+
+onValue(vaultRef, (snap) => {
+
+    const data = snap.val();
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     allData = data
         ? Object.entries(data)
             .map(([k, v]) => ({
@@ -382,9 +499,15 @@ onValue(vaultRef, (snap) => {
     renderFiltered();
     renderFavorites();
 });
+<<<<<<< HEAD
 
 /* RENDER */
 
+=======
+
+/* RENDER */
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 function renderCard(item) {
     const safeId = cleanText(item.id);
     const safeKey = cleanText(item.fbKey);
@@ -520,6 +643,7 @@ function render(items) {
 
     grid.innerHTML = items.map(renderCard).join('');
 }
+<<<<<<< HEAD
 
 /* FILTER BUTTONS */
 
@@ -533,18 +657,40 @@ window.filterCat = (cat, btn) => {
             b.classList.remove('active')
         );
 
+=======
+
+/* FILTER BUTTONS */
+
+window.filterCat = (cat, btn) => {
+
+    currentFilter = cat;
+
+    document
+        .querySelectorAll('.cat-btn')
+        .forEach(b =>
+            b.classList.remove('active')
+        );
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     btn.classList.add('active');
 
     renderFiltered();
     addTerminalLog(`Filter set to ${cat.toUpperCase()}`);
 };
+<<<<<<< HEAD
 
 /* SORT */
 
+=======
+
+/* SORT */
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 window.sortItems = () => {
     renderFiltered();
     addTerminalLog(`Sort changed to ${document.getElementById('sortSelect').value}`);
 };
+<<<<<<< HEAD
 
 /* FAVORITES */
 
@@ -565,6 +711,28 @@ window.toggleFavorite = (id) => {
         JSON.stringify(favorites)
     );
 
+=======
+
+/* FAVORITES */
+
+window.toggleFavorite = (id) => {
+
+    if (favorites.includes(id)) {
+
+        favorites =
+            favorites.filter(f => f !== id);
+
+    } else {
+
+        favorites.push(id);
+    }
+
+    localStorage.setItem(
+        'favorites',
+        JSON.stringify(favorites)
+    );
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     updateFavoriteCounter();
 
     renderFiltered();
@@ -576,6 +744,7 @@ window.toggleFavorite = (id) => {
             : `Removed ${id} from favorites`
     );
 };
+<<<<<<< HEAD
 
 function updateFavoriteCounter() {
 
@@ -632,10 +801,69 @@ window.renderFiltered = () => {
             .value;
 
     let filtered = allData.filter(item => {
+=======
+
+function updateFavoriteCounter() {
+
+    document.getElementById(
+        'favorite-count'
+    ).innerText = favorites.length;
+}
+
+function renderFavorites() {
+
+    const grid =
+        document.getElementById(
+            'favorites-grid'
+        );
+
+    const empty =
+        document.getElementById(
+            'empty-favorites'
+        );
+
+    const favItems =
+        allData.filter(i =>
+            favorites.includes(i.id)
+        );
+
+    if (!favItems.length) {
+
+        empty.style.display = 'block';
+
+        grid.innerHTML = '';
+
+        return;
+    }
+
+    empty.style.display = 'none';
+
+    grid.innerHTML = favItems.map(renderCard).join('');
+}
+
+/* SEARCH & FILTER */
+
+window.handleSearch = () => {
+    renderFiltered();
+};
+
+window.renderFiltered = () => {
+    const searchTerm =
+        document.getElementById('searchInput')
+            .value
+            .toLowerCase();
+
+    const sortValue =
+        document.getElementById('sortSelect')
+            .value;
+
+    let filtered = allData.filter(item => {
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
         const matchesSearch =
             String(item.name || '').toLowerCase().includes(searchTerm) ||
             String(item.id || '').includes(searchTerm) ||
             String(item.desc || '').toLowerCase().includes(searchTerm);
+<<<<<<< HEAD
 
         const matchesCategory =
             currentFilter === 'all' ||
@@ -644,6 +872,16 @@ window.renderFiltered = () => {
         return matchesSearch && matchesCategory;
     });
 
+=======
+
+        const matchesCategory =
+            currentFilter === 'all' ||
+            item.cat === currentFilter;
+
+        return matchesSearch && matchesCategory;
+    });
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     if (sortValue === 'alpha') {
         filtered.sort((a, b) =>
             String(a.name || '').localeCompare(String(b.name || ''))
@@ -661,6 +899,7 @@ window.renderFiltered = () => {
             Number(b.time || 0) - Number(a.time || 0)
         );
     }
+<<<<<<< HEAD
 
     render(filtered);
 };
@@ -687,6 +926,34 @@ window.showSection = (section) => {
             b.classList.remove('active-nav')
         );
 
+=======
+
+    render(filtered);
+};
+
+/* NAVIGATION */
+
+window.showSection = (section) => {
+
+    document.getElementById('vault-view')
+        .style.display =
+        section === 'vault'
+        ? 'block'
+        : 'none';
+
+    document.getElementById('favorites-view')
+        .style.display =
+        section === 'favorites'
+        ? 'block'
+        : 'none';
+
+    document
+        .querySelectorAll('.nav-btn')
+        .forEach(b =>
+            b.classList.remove('active-nav')
+        );
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     if (section === 'favorites') {
 
         document
@@ -704,6 +971,7 @@ window.showSection = (section) => {
         addTerminalLog('Opened vault view');
     }
 };
+<<<<<<< HEAD
 
 /* MODAL */
 
@@ -737,11 +1005,47 @@ window.openModal = (fbKey) => {
         .innerText =
         item.desc || 'No description';
 
+=======
+
+/* MODAL */
+
+window.openModal = (fbKey) => {
+
+    const item =
+        allData.find(i =>
+            i.fbKey === fbKey
+        );
+
+    if (!item) return;
+
+    document.getElementById('modal-image')
+        .src =
+        `https://assetgame.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=${item.id}`;
+
+    document.getElementById('modal-title')
+        .innerText = item.name;
+
+    document.getElementById('modal-id')
+        .innerText = `ID: ${item.id}`;
+
+    document.getElementById('modal-category')
+        .innerText = `CATEGORY: ${item.cat}`;
+
+    document.getElementById('modal-status')
+        .innerText =
+        `STATUS: ${item.status}`;
+
+    document.getElementById('modal-desc')
+        .innerText =
+        item.desc || 'No description';
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     window.currentModalId = item.id;
     window.currentModalFbKey = item.fbKey;
 
     document.getElementById('gear-modal')
         .classList.remove('hidden');
+<<<<<<< HEAD
 };
 
 window.closeModal = () => {
@@ -750,12 +1054,23 @@ window.closeModal = () => {
         .classList.add('hidden');
 };
 
+=======
+};
+
+window.closeModal = () => {
+
+    document.getElementById('gear-modal')
+        .classList.add('hidden');
+};
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 window.modalCopy = () => {
 
     if (window.currentModalId) {
         copyId(window.currentModalId, window.currentModalFbKey);
     }
 };
+<<<<<<< HEAD
 
 /* RANDOM */
 
@@ -763,6 +1078,15 @@ window.randomGear = () => {
 
     if (!allData.length) return;
 
+=======
+
+/* RANDOM */
+
+window.randomGear = () => {
+
+    if (!allData.length) return;
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     const random =
         allData[
             Math.floor(
@@ -773,6 +1097,7 @@ window.randomGear = () => {
     openModal(random.fbKey);
     addTerminalLog(`Random item opened: ${random.name || random.id}`);
 };
+<<<<<<< HEAD
 
 /* STATS */
 
@@ -789,6 +1114,24 @@ function updateStats() {
             i.cat === 'gears'
         ).length;
 
+=======
+
+/* STATS */
+
+function updateStats() {
+
+    document.getElementById(
+        'total-items'
+    ).innerText = allData.length;
+
+    document.getElementById(
+        'gear-count'
+    ).innerText =
+        allData.filter(i =>
+            i.cat === 'gears'
+        ).length;
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     document.getElementById(
         'audio-count'
     ).innerText =
@@ -810,6 +1153,7 @@ function updateStats() {
             sum + Number(i.reports || 0), 0
         );
 }
+<<<<<<< HEAD
 
 /* ACTIONS */
 
@@ -849,12 +1193,57 @@ window.addItem = () => {
         time: Date.now()
     });
 
+=======
+
+/* ACTIONS */
+
+window.addItem = () => {
+
+    if (!requireAdmin()) return;
+
+    const name =
+        document.getElementById('newName')
+        .value
+        .trim();
+
+    const id =
+        document.getElementById('newId')
+        .value
+        .trim();
+
+    const desc =
+        document.getElementById('newDesc')
+        .value
+        .trim();
+
+    const cat =
+        document.getElementById('newCat')
+        .value;
+
+    if (!name || !id) {
+        return alert("Missing fields.");
+    }
+
+    set(push(vaultRef), {
+        name,
+        id,
+        desc,
+        cat,
+        status: 'working',
+        time: Date.now()
+    });
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     document.getElementById('newName').value = '';
     document.getElementById('newId').value = '';
     document.getElementById('newDesc').value = '';
     addTerminalLog(`Injected new item: ${name}`);
 };
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 window.toggleStatus = (k, s) => {
 
     if (!requireAdmin()) return;
@@ -867,12 +1256,17 @@ window.toggleStatus = (k, s) => {
     );
     addTerminalLog(`Status flipped for ${k}`);
 };
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 window.requestPurge = (k) => {
 
     if (!requireAdmin()) return;
 
     if (attempts >= 5) {
+<<<<<<< HEAD
         return alert("LOCKED");
     }
 
@@ -893,6 +1287,28 @@ document.getElementById(
         ).value === "2135"
     ) {
 
+=======
+        return alert("LOCKED");
+    }
+
+    window.pendingKey = k;
+
+    document.getElementById(
+        'purge-auth-overlay'
+    ).style.display = 'flex';
+};
+
+document.getElementById(
+    'confirmPurgeBtn'
+).onclick = () => {
+
+    if (
+        document.getElementById(
+            'purgeCodeField'
+        ).value === "2135"
+    ) {
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
         remove(
             ref(
                 db,
@@ -915,6 +1331,7 @@ document.getElementById(
         addTerminalLog(`Purge code failed for ${window.pendingKey}`, 'warning');
     }
 };
+<<<<<<< HEAD
 
 window.cancelPurge = () => {
 
@@ -925,6 +1342,18 @@ window.cancelPurge = () => {
 
 /* COPY */
 
+=======
+
+window.cancelPurge = () => {
+
+    document.getElementById(
+        'purge-auth-overlay'
+    ).style.display = 'none';
+};
+
+/* COPY */
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 function bumpItemCount(fbKey, field) {
     const item =
         allData.find(i => i.fbKey === fbKey);
@@ -992,6 +1421,7 @@ window.reportItem = (fbKey) => {
     showToast('REPORT SENT');
     addTerminalLog(`Reported ${item.name || item.id}`);
 };
+<<<<<<< HEAD
 
 /* EXPORT */
 
@@ -1010,6 +1440,26 @@ window.exportJSON = () => {
 
     a.href = url;
 
+=======
+
+/* EXPORT */
+
+window.exportJSON = () => {
+
+    const blob = new Blob(
+        [JSON.stringify(allData, null, 2)],
+        { type: 'application/json' }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement('a');
+
+    a.href = url;
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     a.download = 'vault-backup.json';
 
     a.click();
@@ -1070,6 +1520,7 @@ window.importJSON = (event) => {
     reader.readAsText(file);
 };
 
+<<<<<<< HEAD
 function parseBulkLine(line) {
     const cleaned = String(line || '').trim();
 
@@ -1241,6 +1692,8 @@ window.confirmBulkImport = () => {
     closeBulkImport();
 };
 
+=======
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
 window.toggleAdminMode = () => {
 
     if (isAdmin) {
@@ -1290,6 +1743,7 @@ window.toggleChatCollapse = () => {
         chat.classList.toggle('chat-collapsed');
     }
 };
+<<<<<<< HEAD
 
 /* CTRL+K */
 
@@ -1378,6 +1832,94 @@ setInterval(() => {
 /* INIT */
 window.openAsset = (id) => {
 
+=======
+
+/* CTRL+K */
+
+window.addEventListener('keydown', (e) => {
+
+    if (e.ctrlKey && e.key === 'k') {
+
+        e.preventDefault();
+
+        document.getElementById(
+            'searchInput'
+        ).focus();
+    }
+
+    if (e.key === 'Escape') {
+
+        closeModal();
+    }
+});
+
+/* MATRIX */
+
+const canvas =
+    document.getElementById(
+        'matrix-canvas'
+    );
+
+const ctx =
+    canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const drops =
+    Array(
+        Math.floor(canvas.width / 20)
+    ).fill(1);
+
+setInterval(() => {
+
+    ctx.fillStyle =
+        "rgba(2,11,2,0.05)";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle = "#004422";
+
+    drops.forEach((y, i) => {
+
+        ctx.fillText(
+            Math.floor(Math.random() * 2),
+            i * 20,
+            y * 20
+        );
+
+        if (
+            y * 20 > canvas.height
+            &&
+            Math.random() > 0.975
+        ) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    });
+
+}, 50);
+
+/* CLOCK */
+
+setInterval(() => {
+
+    document.getElementById('clock')
+        .innerText =
+        new Date().toLocaleTimeString();
+
+}, 1000);
+
+/* INIT */
+window.openAsset = (id) => {
+
+>>>>>>> be46555ac8a5c2299569155ae2c557f661998f4c
     window.open(
         `https://www.roblox.com/catalog/${id}`,
         '_blank'

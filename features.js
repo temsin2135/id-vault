@@ -56,7 +56,8 @@ function showSyncStatus(syncing = false) {
 
 /* EDIT SYSTEM */
 window.openEditModal = (id) => {
-    const item = allData.find(i => i.id === id);
+    if (!window.requireAdmin()) return;
+    const item = window.allData.find(i => i.id === id);
     if (!item) return;
     editingKey = item.fbKey;
     document.getElementById('edit-name').value = item.name;
@@ -74,6 +75,7 @@ window.closeEditModal = () => {
 };
 
 window.saveEdit = () => {
+    if (!window.requireAdmin()) return;
     if (!editingKey) return;
     const name = document.getElementById('edit-name').value.trim();
     const id = document.getElementById('edit-id').value.trim();
@@ -87,8 +89,8 @@ window.saveEdit = () => {
     
     showSyncStatus(true);
     
-    const item = allData.find(i => i.fbKey === editingKey);
-    set(ref(db, `gears/${editingKey}`), {
+    const item = window.allData.find(i => i.fbKey === editingKey);
+    window.set(window.ref(window.db, `gears/${editingKey}`), {
         name, id, desc,
         cat: item?.cat || 'gears',
         status, 
@@ -163,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalButtons = document.querySelector('.modal-buttons');
         if (modalButtons) {
             const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn';
+            editBtn.className = 'edit-btn admin-only';
             editBtn.onclick = openEditFromModal;
             editBtn.textContent = '✏️ EDIT';
             modalButtons.appendChild(editBtn);

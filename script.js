@@ -29,18 +29,68 @@ const db = getDatabase(app);
 const vaultRef = ref(db, 'gears');
 const chatRef = ref(db, 'chat');
 
+window.db = db;
+window.ref = ref;
+window.set = set;
+
 /* GLOBAL */
 
 let allData = [];
+
+window.allData = allData;
 
 let currentFilter = 'all';
 
 let favorites =
     JSON.parse(localStorage.getItem('favorites')) || [];
 
+let isAdmin =
+    localStorage.getItem('adminMode') === 'true';
+
 let attempts = 0;
 
 let lastMessageTime = 0;
+
+const adminCode = '2135';
+
+const categoryLabels = {
+    gears: 'GEARS',
+    music: 'AUDIO',
+    animations: 'ANIMATIONS',
+    faces: 'FACES',
+    hats: 'HATS',
+    models: 'MODELS',
+    decals: 'DECALS'
+};
+
+function cleanText(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function requireAdmin() {
+    if (isAdmin) return true;
+    alert('Admin mode required.');
+    return false;
+}
+
+window.requireAdmin = requireAdmin;
+
+function showToast(message = 'ID COPIED') {
+    const toast =
+        document.getElementById('toast');
+
+    toast.innerText = message;
+    toast.style.display = 'block';
+
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 1500);
+}
 
 /* CHAT */
 
@@ -57,6 +107,13 @@ window.sendChat = () => {
         .value
         .trim();
 
+    const nameField =
+        document.getElementById('chatName');
+
+    const name =
+        (nameField.value.trim() || 'anonymous')
+        .slice(0, 18);
+
     if (!msg) return;
 
     if (msg.length > 120) {
@@ -64,13 +121,14 @@ window.sendChat = () => {
     }
 
     push(chatRef, {
-        msg: msg
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;"),
+        name: cleanText(name),
+        msg: cleanText(msg),
         time: now
     });
 
     lastMessageTime = now;
+
+    localStorage.setItem('chatName', name);
 
     document.getElementById('chatMsg').value = '';
 };
@@ -93,11 +151,14 @@ onValue(query(chatRef, limitToLast(50)), (snap) => {
             )
             .map(m => `
                 <div class="chat-msg">
-                    <small>
-                        [${new Date(m.time)
-                            .toLocaleTimeString()}]
-                    </small>
-                    ${m.msg}
+                    <div class="chat-meta">
+                        <strong>${cleanText(m.name || 'anonymous')}</strong>
+                        <small>
+                            ${new Date(m.time)
+                                .toLocaleTimeString()}
+                        </small>
+                    </div>
+                    <div>${m.msg}</div>
                 </div>
             `).join('')
         : '';
@@ -119,12 +180,127 @@ onValue(vaultRef, (snap) => {
             }))
         : [];
 
+    window.allData = allData;
+
     updateStats();
 
     renderFiltered();
+    renderFavorites();
 });
 
 /* RENDER */
+
+function renderCard(item) {
+    const safeId = cleanText(item.id);
+    const safeKey = cleanText(item.fbKey);
+    const status = item.status || 'working';
+    const category = item.cat || 'unknown';
+    const iconClass = category === 'music'
+        ? 'fa-music'
+        : category === 'animations'
+            ? 'fa-person-running'
+            : category === 'faces'
+                ? 'fa-face-smile'
+                : category === 'hats'
+                    ? 'fa-hat-wizard'
+                    : category === 'decals'
+                        ? 'fa-image'
+                        : 'fa-cube';
+
+    const adminTools = isAdmin ? `
+        <button
+            class="purge-btn"
+            title="Purge gear"
+            onclick="requestPurge('${safeKey}')"
+        >
+            <i class="fas fa-trash"></i>
+            PURGE
+        </button>
+    ` : '';
+
+    return `
+        <div class="card">
+            <div class="card-top">
+                <div class="gear-icon">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+
+                <div
+                    class="status-tag ${status}"
+                    onclick="toggleStatus('${safeKey}', '${status}')"
+                    title="Admin: toggle status"
+                >
+                    ${status.toUpperCase()}
+                </div>
+            </div>
+
+            <div class="card-title">
+                ${cleanText(item.name)}
+            </div>
+
+            <div class="item-id">
+                ${safeId}
+            </div>
+
+            <div class="item-desc">
+                ${cleanText(item.desc || 'No description')}
+            </div>
+
+            <div class="card-category">
+                ${categoryLabels[category] || cleanText(category)}
+            </div>
+
+            <div class="item-metrics">
+                <span><i class="fas fa-copy"></i> ${item.copies || 0}</span>
+                <span><i class="fas fa-flag"></i> ${item.reports || 0}</span>
+            </div>
+
+            <div class="card-actions">
+                <button
+                    class="action-btn"
+                    onclick="copyId('${safeId}', '${safeKey}')"
+                >
+                    <i class="fas fa-copy"></i>
+                    ID
+                </button>
+
+                <button
+                    class="action-btn"
+                    onclick="copyCommand('${safeId}', '${safeKey}')"
+                >
+                    <i class="fas fa-terminal"></i>
+                    CMD
+                </button>
+
+                <button
+                    class="action-btn"
+                    onclick="openAsset('${safeId}')"
+                >
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                    OPEN
+                </button>
+
+                <button
+                    class="fav-btn"
+                    onclick="toggleFavorite('${safeId}')"
+                    title="Favorite"
+                >
+                    <i class="${favorites.includes(item.id) ? 'fas' : 'far'} fa-star"></i>
+                </button>
+
+                <button
+                    class="report-btn"
+                    onclick="reportItem('${safeKey}')"
+                    title="Report broken item"
+                >
+                    <i class="fas fa-flag"></i>
+                </button>
+
+                ${adminTools}
+            </div>
+        </div>
+    `;
+}
 
 function render(items) {
 
@@ -147,89 +323,7 @@ function render(items) {
     if (empty)
         empty.style.display = 'none';
 
-    grid.innerHTML = items.map(item => `
-
-        <div class="card">
-
-            <div class="card-top">
-
-                <div class="gear-icon">
-                    <i class="fas fa-cube"></i>
-                </div>
-
-                <div
-                    class="status-tag ${item.status || 'working'}"
-                    onclick="
-                        toggleStatus(
-                            '${item.fbKey}',
-                            '${item.status}'
-                        )
-                    "
-                >
-                    ${(item.status || 'working').toUpperCase()}
-                </div>
-
-            </div>
-
-            <div class="card-title">
-                ${item.name}
-            </div>
-
-            <div class="item-id">
-                ${item.id}
-            </div>
-
-            <div class="item-desc">
-                ${item.desc || 'No description'}
-            </div>
-
-            <div class="card-category">
-                ${item.cat || 'unknown'}
-            </div>
-
-            <div class="card-actions">
-
-                <button
-                    class="action-btn"
-
-                    onclick="
-                        copyId('${item.id}')
-                    "
-                >
-                    <i class="fas fa-copy"></i>
-                    COPY
-                </button>
-
-                <button
-                    class="action-btn"
-
-                    onclick="
-                        openAsset('${item.id}')
-                    "
-                >
-                    <i class="fas fa-arrow-up-right-from-square"></i>
-                    OPEN
-                </button>
-
-                <button
-                    class="fav-btn"
-
-                    onclick="
-                        toggleFavorite('${item.id}')
-                    "
-                >
-                    <i class="
-                        ${favorites.includes(item.id)
-                            ? 'fas'
-                            : 'far'}
-                        fa-star
-                    "></i>
-                </button>                
-            </div>
-
-        </div>
-
-    `).join('');
+    grid.innerHTML = items.map(renderCard).join('');
 }
 
 /* FILTER BUTTONS */
@@ -316,60 +410,7 @@ function renderFavorites() {
 
     empty.style.display = 'none';
 
-    grid.innerHTML = favItems.map(item => `
-        <div class="card">
-            <div class="card-top">
-                <div class="gear-icon">
-                    <i class="fas fa-cube"></i>
-                </div>
-                <div
-                    class="status-tag ${item.status || 'working'}"
-                    onclick="
-                        toggleStatus(
-                            '${item.fbKey}',
-                            '${item.status}'
-                        )
-                    "
-                >
-                    ${(item.status || 'working').toUpperCase()}
-                </div>
-            </div>
-            <div class="card-title">
-                ${item.name}
-            </div>
-            <div class="item-id">
-                ${item.id}
-            </div>
-            <div class="item-desc">
-                ${item.desc || 'No description'}
-            </div>
-            <div class="card-category">
-                ${item.cat || 'unknown'}
-            </div>
-            <div class="card-actions">
-                <button
-                    class="action-btn"
-                    onclick="copyId('${item.id}')"
-                >
-                    <i class="fas fa-copy"></i>
-                    COPY
-                </button>
-                <button
-                    class="action-btn"
-                    onclick="openAsset('${item.id}')"
-                >
-                    <i class="fas fa-arrow-up-right-from-square"></i>
-                    OPEN
-                </button>
-                <button
-                    class="fav-btn"
-                    onclick="toggleFavorite('${item.id}')"
-                >
-                    <i class="fas fa-star"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
+    grid.innerHTML = favItems.map(renderCard).join('');
 }
 
 /* SEARCH & FILTER */
@@ -390,9 +431,9 @@ window.renderFiltered = () => {
 
     let filtered = allData.filter(item => {
         const matchesSearch =
-            item.name.toLowerCase().includes(searchTerm) ||
-            item.id.toString().includes(searchTerm) ||
-            (item.desc && item.desc.toLowerCase().includes(searchTerm));
+            String(item.name || '').toLowerCase().includes(searchTerm) ||
+            String(item.id || '').includes(searchTerm) ||
+            String(item.desc || '').toLowerCase().includes(searchTerm);
 
         const matchesCategory =
             currentFilter === 'all' ||
@@ -403,11 +444,19 @@ window.renderFiltered = () => {
 
     if (sortValue === 'alpha') {
         filtered.sort((a, b) =>
-            a.name.localeCompare(b.name)
+            String(a.name || '').localeCompare(String(b.name || ''))
+        );
+    } else if (sortValue === 'popular') {
+        filtered.sort((a, b) =>
+            Number(b.copies || 0) - Number(a.copies || 0)
+        );
+    } else if (sortValue === 'reported') {
+        filtered.sort((a, b) =>
+            Number(b.reports || 0) - Number(a.reports || 0)
         );
     } else {
         filtered.sort((a, b) =>
-            b.time - a.time
+            Number(b.time || 0) - Number(a.time || 0)
         );
     }
 
@@ -485,6 +534,7 @@ window.openModal = (fbKey) => {
         item.desc || 'No description';
 
     window.currentModalId = item.id;
+    window.currentModalFbKey = item.fbKey;
 
     document.getElementById('gear-modal')
         .classList.remove('hidden');
@@ -499,7 +549,7 @@ window.closeModal = () => {
 window.modalCopy = () => {
 
     if (window.currentModalId) {
-        copyId(window.currentModalId);
+        copyId(window.currentModalId, window.currentModalFbKey);
     }
 };
 
@@ -540,11 +590,27 @@ function updateStats() {
         allData.filter(i =>
             i.cat === 'music'
         ).length;
+
+    document.getElementById(
+        'copy-count'
+    ).innerText =
+        allData.reduce((sum, i) =>
+            sum + Number(i.copies || 0), 0
+        );
+
+    document.getElementById(
+        'report-count'
+    ).innerText =
+        allData.reduce((sum, i) =>
+            sum + Number(i.reports || 0), 0
+        );
 }
 
 /* ACTIONS */
 
 window.addItem = () => {
+
+    if (!requireAdmin()) return;
 
     const name =
         document.getElementById('newName')
@@ -585,6 +651,8 @@ window.addItem = () => {
 
 window.toggleStatus = (k, s) => {
 
+    if (!requireAdmin()) return;
+
     set(
         ref(db, `gears/${k}/status`),
         s === 'patched'
@@ -594,6 +662,8 @@ window.toggleStatus = (k, s) => {
 };
 
 window.requestPurge = (k) => {
+
+    if (!requireAdmin()) return;
 
     if (attempts >= 5) {
         return alert("LOCKED");
@@ -646,18 +716,69 @@ window.cancelPurge = () => {
 
 /* COPY */
 
-window.copyId = (id) => {
+function bumpItemCount(fbKey, field) {
+    const item =
+        allData.find(i => i.fbKey === fbKey);
+
+    if (!item) return;
+
+    set(
+        ref(db, `gears/${fbKey}/${field}`),
+        Number(item[field] || 0) + 1
+    );
+}
+
+window.copyId = (id, fbKey = null) => {
 
     navigator.clipboard.writeText(id);
 
-    const toast =
-        document.getElementById('toast');
+    if (fbKey) {
+        bumpItemCount(fbKey, 'copies');
+    }
 
-    toast.style.display = 'block';
+    showToast('ID COPIED');
+};
 
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, 1500);
+window.copyCommand = (id, fbKey = null) => {
+
+    const command =
+        `game:GetService("InsertService"):LoadAsset(${id}).Parent = workspace`;
+
+    navigator.clipboard.writeText(command);
+
+    if (fbKey) {
+        bumpItemCount(fbKey, 'copies');
+    }
+
+    showToast('COMMAND COPIED');
+};
+
+window.reportItem = (fbKey) => {
+
+    const item =
+        allData.find(i => i.fbKey === fbKey);
+
+    if (!item) return;
+
+    const reason =
+        prompt(
+            'Report this item as broken, patched, wrong ID, or bad description:',
+            'broken'
+        );
+
+    if (!reason) return;
+
+    set(
+        ref(db, `gears/${fbKey}/reports`),
+        Number(item.reports || 0) + 1
+    );
+
+    set(
+        ref(db, `gears/${fbKey}/lastReport`),
+        cleanText(reason).slice(0, 80)
+    );
+
+    showToast('REPORT SENT');
 };
 
 /* EXPORT */
@@ -682,6 +803,104 @@ window.exportJSON = () => {
     a.click();
 
     URL.revokeObjectURL(url);
+};
+
+window.importJSON = (event) => {
+
+    if (!requireAdmin()) {
+        event.target.value = '';
+        return;
+    }
+
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        try {
+            const parsed = JSON.parse(reader.result);
+            const items = Array.isArray(parsed)
+                ? parsed
+                : Object.values(parsed);
+
+            if (!items.length) {
+                alert('No items found in that backup.');
+                return;
+            }
+
+            items.forEach(item => {
+                if (!item.name || !item.id) return;
+
+                set(push(vaultRef), {
+                    name: String(item.name).trim(),
+                    id: String(item.id).trim(),
+                    desc: String(item.desc || '').trim(),
+                    cat: item.cat || 'gears',
+                    status: item.status || 'working',
+                    copies: Number(item.copies || 0),
+                    reports: Number(item.reports || 0),
+                    time: item.time || Date.now()
+                });
+            });
+
+            showToast('IMPORT COMPLETE');
+        } catch (err) {
+            alert('Import failed. Make sure it is a valid JSON backup.');
+        }
+
+        event.target.value = '';
+    };
+
+    reader.readAsText(file);
+};
+
+window.toggleAdminMode = () => {
+
+    if (isAdmin) {
+        isAdmin = false;
+        localStorage.setItem('adminMode', 'false');
+        updateAdminUI();
+        renderFiltered();
+        renderFavorites();
+        return;
+    }
+
+    const code =
+        prompt('Enter admin code:');
+
+    if (code !== adminCode) {
+        alert('Wrong admin code.');
+        return;
+    }
+
+    isAdmin = true;
+    localStorage.setItem('adminMode', 'true');
+    updateAdminUI();
+    renderFiltered();
+    renderFavorites();
+};
+
+function updateAdminUI() {
+    document.body.classList.toggle('admin-mode', isAdmin);
+
+    const btn =
+        document.getElementById('adminToggleBtn');
+
+    if (!btn) return;
+
+    btn.innerHTML = isAdmin
+        ? '<i class="fas fa-unlock"></i> ADMIN_ON'
+        : '<i class="fas fa-lock"></i> ADMIN';
+}
+
+window.toggleChatCollapse = () => {
+    const chat =
+        document.querySelector('.chat-section');
+
+    if (chat) {
+        chat.classList.toggle('chat-collapsed');
+    }
 };
 
 /* CTRL+K */
@@ -776,54 +995,16 @@ window.openAsset = (id) => {
 };
 updateFavoriteCounter();
 renderFavorites();
-/* RADIO SYSTEM */
+updateAdminUI();
 
-const radio =
-    document.getElementById('radio-player');
+const savedChatName =
+    localStorage.getItem('chatName');
 
-const radioToggle =
-    document.getElementById('radio-toggle');
+if (savedChatName) {
+    const chatName =
+        document.getElementById('chatName');
 
-/* ROBLOX AUDIO ID */
-
-const defaultRadioId = '1843520822';
-
-/* LOAD AUDIO */
-
-radio.src =
-    `https://api.allorigins.win/raw?url=https://assetdelivery.roblox.com/v1/asset/?id=${defaultRadioId}`;
-
-radio.volume = 0.2;
-
-let radioPlaying = false;
-
-/* CLICK TO PLAY */
-
-radioToggle.addEventListener('click', async () => {
-
-    try{
-
-        if(!radioPlaying){
-
-            await radio.play();
-
-            radioPlaying = true;
-
-            radioToggle.classList.add('playing');
-
-        }else{
-
-            radio.pause();
-
-            radioPlaying = false;
-
-            radioToggle.classList.remove('playing');
-        }
-
-    }catch(err){
-
-        console.log(err);
-
-        alert('Radio failed to load.');
+    if (chatName) {
+        chatName.value = savedChatName;
     }
-});
+}

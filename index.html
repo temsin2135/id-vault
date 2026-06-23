@@ -84,6 +84,26 @@
                 ADMIN
             </button>
 
+            <select
+                class="theme-select"
+                id="decorTheme"
+                onchange="setDecorTheme(this.value)"
+            >
+                <option value="matrix">MATRIX</option>
+                <option value="blood">BLOOD_RED</option>
+                <option value="ice">ICE_BLUE</option>
+                <option value="gold">GOLD_VAULT</option>
+                <option value="void">VOID_PURPLE</option>
+            </select>
+
+            <button
+                class="nav-btn brainrot-toggle"
+                onclick="toggleBrainrotMode()"
+            >
+                <i class="fas fa-video"></i>
+                BRAINROT
+            </button>
+
             <div class="favorite-counter">
                 ⭐ <span id="favorite-count">0</span>
             </div>
@@ -492,6 +512,36 @@
     <!-- TOAST -->
     <div id="toast" class="toast">
         ID COPIED
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <aside class="activity-log" id="activityLog">
+        <div class="activity-log-header">
+            <span>TERMINAL_LOG</span>
+            <span>LIVE</span>
+        </div>
+        <div id="activityLogLines"></div>
+    </aside>
+
+    <!-- BRAINROT MODE -->
+    <div class="brainrot-panel hidden" id="brainrotPanel">
+        <div class="brainrot-header">
+            <span>BRAINROT_MODE</span>
+            <div>
+                <button onclick="changeBrainrotVideo()">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button onclick="toggleBrainrotMode()">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <iframe
+            id="brainrotFrame"
+            title="Brainrot video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+        ></iframe>
     </div>
 
     <!-- FOOTER -->

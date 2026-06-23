@@ -53,6 +53,22 @@ let lastMessageTime = 0;
 
 const adminCode = '2135';
 
+let decorTheme =
+    localStorage.getItem('decorTheme') || 'matrix';
+
+let brainrotVideo =
+    localStorage.getItem('brainrotVideo') ||
+    'https://www.youtube.com/embed?listType=search&list=Subway%20Surfers%20gameplay&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1';
+
+let brainrotEnabled =
+    localStorage.getItem('brainrotEnabled') === 'true';
+
+const brainrotPlaylist = [
+    'https://www.youtube.com/embed?listType=search&list=Subway%20Surfers%20gameplay&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1',
+    'https://www.youtube.com/embed?listType=search&list=oddly%20satisfying%20loop&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1',
+    'https://www.youtube.com/embed?listType=search&list=brain%20rot%20edit&mute=1&autoplay=1&controls=0&rel=0&modestbranding=1'
+];
+
 const categoryLabels = {
     gears: 'GEARS',
     music: 'AUDIO',
@@ -91,6 +107,120 @@ function showToast(message = 'ID COPIED') {
         toast.style.display = 'none';
     }, 1500);
 }
+
+function addTerminalLog(message, level = 'system') {
+    const lines =
+        document.getElementById('activityLogLines');
+
+    if (!lines) return;
+
+    const line =
+        document.createElement('div');
+
+    line.className = 'activity-line';
+    line.innerHTML = `
+        <span>${new Date().toLocaleTimeString()}</span>
+        <strong>${cleanText(message)}</strong>
+    `;
+
+    if (level !== 'system') {
+        line.classList.add(level);
+    }
+
+    lines.prepend(line);
+
+    while (lines.children.length > 8) {
+        lines.lastChild.remove();
+    }
+}
+
+function getYoutubeEmbedUrl(rawUrl) {
+    const value = String(rawUrl || '').trim();
+
+    if (!value) return null;
+
+    if (value.includes('/embed/')) {
+        return value.includes('?')
+            ? `${value}&mute=1`
+            : `${value}?mute=1`;
+    }
+
+    const watchMatch =
+        value.match(/[?&]v=([^&]+)/);
+
+    const shortMatch =
+        value.match(/youtu\.be\/([^?&]+)/);
+
+    const id =
+        watchMatch?.[1] || shortMatch?.[1];
+
+    if (!id) return null;
+
+    return `https://www.youtube.com/embed/${id}?mute=1`;
+}
+
+function applyDecorTheme(theme) {
+    const selected = theme || 'matrix';
+
+    document.body.dataset.theme = selected;
+    localStorage.setItem('decorTheme', selected);
+
+    const selector = document.getElementById('decorTheme');
+    if (selector && selector.value !== selected) {
+        selector.value = selected;
+    }
+
+    decorTheme = selected;
+    addTerminalLog(`Theme set to ${selected.toUpperCase()}`);
+}
+
+function syncBrainrotPanel() {
+    const panel = document.getElementById('brainrotPanel');
+    const frame = document.getElementById('brainrotFrame');
+
+    if (!panel || !frame) return;
+
+    panel.classList.toggle('hidden', !brainrotEnabled);
+
+    if (brainrotEnabled) {
+        frame.src = brainrotVideo;
+    } else {
+        frame.src = '';
+    }
+
+    localStorage.setItem('brainrotEnabled', String(brainrotEnabled));
+}
+
+window.setDecorTheme = (theme) => {
+    applyDecorTheme(theme);
+};
+
+window.toggleBrainrotMode = () => {
+    brainrotEnabled = !brainrotEnabled;
+    syncBrainrotPanel();
+    addTerminalLog(
+        brainrotEnabled
+            ? 'Brainrot mode enabled'
+            : 'Brainrot mode disabled'
+    );
+};
+
+window.changeBrainrotVideo = () => {
+    const next =
+        brainrotPlaylist[
+            Math.floor(Math.random() * brainrotPlaylist.length)
+        ];
+
+    brainrotVideo = next;
+    localStorage.setItem('brainrotVideo', next);
+
+    const frame = document.getElementById('brainrotFrame');
+    if (frame && brainrotEnabled) {
+        frame.src = next;
+    }
+
+    addTerminalLog('Brainrot panel cycled to a new feed');
+};
 
 /* CHAT */
 
@@ -131,6 +261,7 @@ window.sendChat = () => {
     localStorage.setItem('chatName', name);
 
     document.getElementById('chatMsg').value = '';
+    addTerminalLog(`Chat sent by ${name}`);
 };
 
 onValue(query(chatRef, limitToLast(50)), (snap) => {
@@ -341,12 +472,14 @@ window.filterCat = (cat, btn) => {
     btn.classList.add('active');
 
     renderFiltered();
+    addTerminalLog(`Filter set to ${cat.toUpperCase()}`);
 };
 
 /* SORT */
 
 window.sortItems = () => {
     renderFiltered();
+    addTerminalLog(`Sort changed to ${document.getElementById('sortSelect').value}`);
 };
 
 /* FAVORITES */
@@ -373,6 +506,11 @@ window.toggleFavorite = (id) => {
     renderFiltered();
 
     renderFavorites();
+    addTerminalLog(
+        favorites.includes(id)
+            ? `Saved ${id} to favorites`
+            : `Removed ${id} from favorites`
+    );
 };
 
 function updateFavoriteCounter() {
@@ -492,12 +630,14 @@ window.showSection = (section) => {
             .classList.add('active-nav');
 
         renderFavorites();
+        addTerminalLog('Opened favorites view');
 
     } else {
 
         document
             .querySelectorAll('.nav-btn')[0]
             .classList.add('active-nav');
+        addTerminalLog('Opened vault view');
     }
 };
 
@@ -567,6 +707,7 @@ window.randomGear = () => {
         ];
 
     openModal(random.fbKey);
+    addTerminalLog(`Random item opened: ${random.name || random.id}`);
 };
 
 /* STATS */
@@ -647,6 +788,7 @@ window.addItem = () => {
     document.getElementById('newName').value = '';
     document.getElementById('newId').value = '';
     document.getElementById('newDesc').value = '';
+    addTerminalLog(`Injected new item: ${name}`);
 };
 
 window.toggleStatus = (k, s) => {
@@ -659,6 +801,7 @@ window.toggleStatus = (k, s) => {
             ? 'working'
             : 'patched'
     );
+    addTerminalLog(`Status flipped for ${k}`);
 };
 
 window.requestPurge = (k) => {
@@ -696,6 +839,7 @@ document.getElementById(
         cancelPurge();
 
         attempts = 0;
+        addTerminalLog(`Purged ${window.pendingKey}`);
 
     } else {
 
@@ -704,6 +848,7 @@ document.getElementById(
         alert(
             `FAILED. ${5 - attempts} REMAIN.`
         );
+        addTerminalLog(`Purge code failed for ${window.pendingKey}`, 'warning');
     }
 };
 
@@ -737,6 +882,7 @@ window.copyId = (id, fbKey = null) => {
     }
 
     showToast('ID COPIED');
+    addTerminalLog(`Copied ID ${id}`);
 };
 
 window.copyCommand = (id, fbKey = null) => {
@@ -751,6 +897,7 @@ window.copyCommand = (id, fbKey = null) => {
     }
 
     showToast('COMMAND COPIED');
+    addTerminalLog(`Copied command for ${id}`);
 };
 
 window.reportItem = (fbKey) => {
@@ -779,6 +926,7 @@ window.reportItem = (fbKey) => {
     );
 
     showToast('REPORT SENT');
+    addTerminalLog(`Reported ${item.name || item.id}`);
 };
 
 /* EXPORT */
@@ -803,6 +951,7 @@ window.exportJSON = () => {
     a.click();
 
     URL.revokeObjectURL(url);
+    addTerminalLog('Exported JSON backup');
 };
 
 window.importJSON = (event) => {
@@ -845,8 +994,10 @@ window.importJSON = (event) => {
             });
 
             showToast('IMPORT COMPLETE');
+            addTerminalLog(`Imported ${items.length} items from JSON`);
         } catch (err) {
             alert('Import failed. Make sure it is a valid JSON backup.');
+            addTerminalLog('JSON import failed', 'warning');
         }
 
         event.target.value = '';
@@ -863,6 +1014,7 @@ window.toggleAdminMode = () => {
         updateAdminUI();
         renderFiltered();
         renderFavorites();
+        addTerminalLog('Admin mode disabled');
         return;
     }
 
@@ -879,6 +1031,7 @@ window.toggleAdminMode = () => {
     updateAdminUI();
     renderFiltered();
     renderFavorites();
+    addTerminalLog('Admin mode enabled');
 };
 
 function updateAdminUI() {
@@ -993,9 +1146,12 @@ window.openAsset = (id) => {
         '_blank'
     );
 };
+applyDecorTheme(decorTheme);
+syncBrainrotPanel();
 updateFavoriteCounter();
 renderFavorites();
 updateAdminUI();
+addTerminalLog('System boot complete');
 
 const savedChatName =
     localStorage.getItem('chatName');

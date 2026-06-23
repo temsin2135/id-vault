@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Da Database 😎🕶️</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="dark-mode">
+
+    <!-- MATRIX -->
+    <canvas id="matrix-canvas"></canvas>
+    <div class="scanline"></div>
+
+    <!-- BULK IMPORT -->
+    <div id="bulk-import-overlay" class="bulk-import-overlay hidden">
+        <div class="terminal-box bulk-import-box">
+            <h2 style="color:var(--neon);">BULK_IMPORT</h2>
+            <p class="bulk-hint">
+                One item per line: <code>ITEMNAME-ID-USAGE</code>.
+                Usage can contain dashes. Lines starting with <code>#</code> are ignored.
+            </p>
+
+            <div class="bulk-toolbar">
+                <select id="bulkCat" class="bulk-cat-select">
+                    <option value="gears">GEARS</option>
+                    <option value="music">AUDIO</option>
+                    <option value="animations">ANIMATIONS</option>
+                    <option value="faces">FACES</option>
+                    <option value="hats">HATS</option>
+                    <option value="models">MODELS</option>
+                    <option value="decals">DECALS</option>
+                </select>
+
+                <label class="btn-inject bulk-file-label">
+                    LOAD FILE
+                    <input
+                        type="file"
+                        id="bulkFileInput"
+                        accept="text/plain,.txt,.csv"
+                        onchange="loadBulkFile(event)"
+                    >
+                </label>
+            </div>
+
+            <textarea
+                id="bulkTextInput"
+                class="bulk-textarea"
+                placeholder="CoolGear-123456789-Equip from backpack&#10;EpicSound-987654321-Play on loop&#10;# comments are skipped"
+                oninput="updateBulkPreview()"
+            ></textarea>
+
+            <div id="bulkPreview" class="bulk-preview">
+                Paste or load a file to preview items.
+            </div>
+
+            <div class="bulk-actions">
+                <button class="btn-inject" onclick="confirmBulkImport()">
+                    IMPORT
+                </button>
+                <button
+                    class="btn-inject"
+                    style="background:#444;"
+                    onclick="closeBulkImport()"
+                >
+                    CANCEL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PURGE AUTH -->
+    <div id="purge-auth-overlay" style="display:none;">
+        <div class="terminal-box">
+            <h2 style="color:#ff3131;">PURGE_AUTHORIZATION</h2>
+
+            <input
+                type="password"
+                id="purgeCodeField"
+                placeholder="NUCLEAR_KEY"
+            >
+
+            <button class="btn-inject" id="confirmPurgeBtn">
+                CONFIRM
+            </button>
+
+            <button
+                class="btn-inject"
+                style="background:#444;"
+                onclick="cancelPurge()"
+            >
+                CANCEL
+            </button>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="top-nav">
+
+        <div class="nav-left">
+            <h1 class="logo glitch-text">
+                Da Database 😎🕶️
+            </h1>
+        </div>
+
+        <div class="nav-center">
+
+            <button class="nav-btn active-nav"
+                onclick="showSection('vault')">
+                <i class="fas fa-database"></i>
+                VAULT
+            </button>
+
+            <button class="nav-btn"
+                onclick="showSection('favorites')">
+                <i class="fas fa-star"></i>
+                FAVORITES
+            </button>
+
+            <button class="nav-btn"
+                onclick="randomGear()">
+                <i class="fas fa-random"></i>
+                RANDOM
+            </button>
+
+        </div>
+
+        <div class="nav-right">
+
+            <button
+                class="nav-btn"
+                id="adminToggleBtn"
+                onclick="toggleAdminMode()"
+            >
+                <i class="fas fa-lock"></i>
+                ADMIN
+            </button>
+
+            <select
+                class="theme-select"
+                id="decorTheme"
+                onchange="setDecorTheme(this.value)"
+            >
+                <option value="matrix">MATRIX</option>
+                <option value="blood">BLOOD_RED</option>
+                <option value="ice">ICE_BLUE</option>
+                <option value="gold">GOLD_VAULT</option>
+                <option value="void">VOID_PURPLE</option>
+            </select>
+
+            <button
+                class="nav-btn brainrot-toggle"
+                onclick="toggleBrainrotMode()"
+            >
+                <i class="fas fa-video"></i>
+                BRAINROT
+            </button>
+
+            <div class="favorite-counter">
+                ⭐ <span id="favorite-count">0</span>
+            </div>
+
+            <div class="status-bar">
+                <span id="clock">00:00:00</span>
+                |
+                <span class="neon-text">
+                    HIVE_MIND: ACTIVE
+                </span>
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- MAIN -->
+    <div class="container">
+
+        <section class="main-layout">
+
+            <!-- LEFT -->
+            <div class="vault-section">
+
+                <!-- SEARCH -->
+                <div class="search-controls">
+
+                    <div class="search-box">
+
+                        <i class="fas fa-search"></i>
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="SEARCH DATABASE... (CTRL+K)"
+                            onkeyup="handleSearch()"
+                        >
+
+                        <div id="search-suggestions"
+                            class="suggestions">
+                        </div>
+
+                    </div>
+
+                    <div class="sort-controls">
+
+                        <select id="sortSelect"
+                            onchange="sortItems()">
+
+                            <option value="recent">
+                                RECENT
+                            </option>
+
+                            <option value="alpha">
+                                ALPHABETICAL
+                            </option>
+
+                            <option value="popular">
+                                MOST COPIED
+                            </option>
+
+                            <option value="reported">
+                                MOST REPORTED
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- STATS -->
+                <div class="stats-bar">
+
+                    <div class="stat-card">
+                        <span id="total-items">0</span>
+                        <small>TOTAL ITEMS</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span id="gear-count">0</span>
+                        <small>GEARS</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span id="audio-count">0</span>
+                        <small>AUDIO</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span id="copy-count">0</span>
+                        <small>COPIES</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span id="report-count">0</span>
+                        <small>REPORTS</small>
+                    </div>
+
+                </div>
+
+                <!-- INJECT -->
+                <div class="controls">
+
+                    <div class="inject-form admin-only">
+
+                        <input
+                            type="text"
+                            id="newName"
+                            placeholder="ITEM NAME"
+                        >
+
+                        <input
+                            type="text"
+                            id="newId"
+                            placeholder="ROBLOX ID"
+                        >
+
+                        <input
+                            type="text"
+                            id="newDesc"
+                            placeholder="USAGE GUIDE"
+                        >
+
+                        <select id="newCat">
+                            <option value="gears">GEARS</option>
+                            <option value="music">AUDIO</option>
+                            <option value="animations">ANIMATIONS</option>
+                            <option value="faces">FACES</option>
+                            <option value="hats">HATS</option>
+                            <option value="models">MODELS</option>
+                            <option value="decals">DECALS</option>
+                        </select>
+
+                        <button
+                            class="btn-inject"
+                            onclick="addItem()"
+                        >
+                            + INJECT
+                        </button>
+
+                    </div>
+
+                    <!-- CATEGORY -->
+                    <div class="category-grid">
+
+                        <button
+                            class="cat-btn active"
+                            onclick="filterCat('all', this)"
+                        >
+                            ALL
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('music', this)"
+                        >
+                            AUDIO
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('gears', this)"
+                        >
+                            GEARS
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('animations', this)"
+                        >
+                            ANIMATIONS
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('faces', this)"
+                        >
+                            FACES
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('hats', this)"
+                        >
+                            HATS
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('models', this)"
+                        >
+                            MODELS
+                        </button>
+
+                        <button
+                            class="cat-btn"
+                            onclick="filterCat('decals', this)"
+                        >
+                            DECALS
+                        </button>
+
+                        <button
+                            class="btn-inject"
+                            style="background:#444;"
+                            onclick="exportJSON()"
+                        >
+                            BACKUP_JSON
+                        </button>
+
+                        <label
+                            class="btn-inject import-label admin-only"
+                            style="background:#444;"
+                        >
+                            IMPORT_JSON
+                            <input
+                                type="file"
+                                id="importFile"
+                                accept="application/json,.json"
+                                onchange="importJSON(event)"
+                            >
+                        </label>
+
+                        <button
+                            class="btn-inject admin-only"
+                            style="background:#263238;"
+                            onclick="openBulkImport()"
+                            title="Paste or load ITEMNAME-ID-USAGE lines"
+                        >
+                            BULK_IMPORT
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- VAULT -->
+                <div id="vault-view">
+
+                    <div
+                        id="vault-grid"
+                        class="vault-grid"
+                    >
+                    </div>
+
+                    <!-- EMPTY -->
+                    <div
+                        id="empty-state"
+                        class="empty-state"
+                        style="display:none;"
+                    >
+
+                        <i class="fas fa-box-open"></i>
+
+                        <h2>No Results Found</h2>
+
+                        <p>
+                            Try another search query.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- FAVORITES -->
+                <div
+                    id="favorites-view"
+                    style="display:none;"
+                >
+
+                    <div class="favorites-header">
+
+                        <h2>
+                            ⭐ FAVORITES
+                        </h2>
+
+                        <p>
+                            Saved items stored locally
+                        </p>
+
+                    </div>
+
+                    <div
+                        id="favorites-grid"
+                        class="vault-grid"
+                    >
+                    </div>
+
+                    <div
+                        id="empty-favorites"
+                        class="empty-state"
+                    >
+
+                        <i class="fas fa-star"></i>
+
+                        <h2>
+                            No Favorites Yet
+                        </h2>
+
+                        <p>
+                            Click the ⭐ button to save items.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CHAT -->
+            <div class="chat-section">
+
+                <div class="chat-header">
+
+                    <h3>
+                        GLOBAL_COMMS
+                    </h3>
+
+                    <span class="chat-status">
+                        CLEARS DAILY
+                    </span>
+
+                    <button
+                        class="chat-toggle"
+                        onclick="toggleChatCollapse()"
+                    >
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+
+                </div>
+
+                <div id="chat-box"></div>
+
+                <div class="chat-input-area">
+
+                    <input
+                        type="text"
+                        id="chatName"
+                        maxlength="18"
+                        placeholder="USERNAME"
+                    >
+
+                    <input
+                        type="text"
+                        id="chatMsg"
+                        placeholder="TYPE MESSAGE..."
+                    >
+
+                    <button onclick="sendChat()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- MODAL -->
+    <div id="gear-modal"
+        class="gear-modal hidden">
+
+        <div class="gear-modal-content">
+
+            <button
+                class="close-modal"
+                onclick="closeModal()"
+            >
+                ×
+            </button>
+
+            <img
+                id="modal-image"
+                class="modal-image"
+            >
+
+            <div class="modal-info">
+
+                <h2 id="modal-title"></h2>
+
+                <div id="modal-id"></div>
+
+                <div id="modal-category"></div>
+
+                <div id="modal-status"></div>
+
+                <p id="modal-desc"></p>
+
+                <div class="modal-buttons">
+
+                    <button
+                        class="copy-btn"
+                        onclick="modalCopy()"
+                    >
+                        COPY ID
+                    </button>
+
+                    <button
+                        id="modal-fav-btn"
+                        class="favorite-btn"
+                    >
+                        ⭐ FAVORITE
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">
+        ID COPIED
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <aside class="activity-log" id="activityLog">
+        <div class="activity-log-header">
+            <span>TERMINAL_LOG</span>
+            <span>LIVE</span>
+        </div>
+        <div id="activityLogLines"></div>
+    </aside>
+
+    <!-- BRAINROT MODE -->
+    <div class="brainrot-panel hidden" id="brainrotPanel">
+        <div class="brainrot-header">
+            <span>BRAINROT_MODE</span>
+            <div>
+                <button onclick="changeBrainrotVideo()">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button onclick="toggleBrainrotMode()">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <iframe
+            id="brainrotFrame"
+            title="Brainrot video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+        ></iframe>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+
+        <p>
+            Da Database 😎🕶️
+            |
+            HIVE_SYSTEM ONLINE
+        </p>
+
+    </footer>
+    <script type="module" src="script.js"></script>
+    <script src="features.js"></script>
+
+</body>
+</html>
